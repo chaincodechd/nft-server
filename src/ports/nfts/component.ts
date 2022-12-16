@@ -28,6 +28,7 @@ export function createNFTComponent<T extends { id: string }>(options: {
   } = options
 
   function getFragmentFetcher(filters: NFTFilters) {
+    console.log('getFragmentFetcher')
     return async (isCount?: boolean) => {
       const query = getFetchQuery(
         filters,
@@ -38,6 +39,7 @@ export function createNFTComponent<T extends { id: string }>(options: {
         isCount
       )
       const variables = getQueryVariables(filters, getSortByProp)
+
       const { nfts: fragments } = await subgraph.query<{
         nfts: T[]
       }>(query, variables)
@@ -46,22 +48,35 @@ export function createNFTComponent<T extends { id: string }>(options: {
   }
 
   async function fetch(options: NFTFilters): Promise<NFTResult[]> {
+    console.log('fetch')
+
     if (options.tokenId && options.contractAddresses) {
       const nft = await fetchOne(options.contractAddresses[0], options.tokenId)
+      // console.log('fetch if')
       return nft ? [nft] : []
     } else if (options.tokenId) {
+      // console.log('fetch else')
+
       throw new Error(
         'You need to provide a "contractAddress" as well when filtering by "tokenId"'
       )
     }
 
+    // console.log('fetch 1')
+
     const fetchFragments = getFragmentFetcher(options)
+    // console.log('fetch 2')
+
     const fragments = await fetchFragments()
+    // console.log('fetch 3')
+
     const nfts = fragments.map(fromFragment)
     return nfts
   }
 
   async function count(options: NFTFilters): Promise<number> {
+    console.log('count')
+
     const fetchFragments = getFragmentFetcher(options)
     const fragments = await fetchFragments(true)
     return fragments.length
@@ -71,6 +86,8 @@ export function createNFTComponent<T extends { id: string }>(options: {
     contractAddress: string,
     tokenId: string
   ): Promise<NFTResult | null> {
+    console.log('fetchOne')
+
     const query = getFetchOneQuery(fragmentName, getFragment)
     const variables = {
       contractAddress,

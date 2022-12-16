@@ -182,7 +182,7 @@ export function getFetchQuery(
     ${NFTS_FILTERS}
     ${getExtraVariables ? getExtraVariables(filters).join('\n') : ''}
     ) {
-    nfts(
+    ercnfts(
       where: {
         ${where.join('\n')}
         ${getExtraWhere ? getExtraWhere(filters).join('\n') : ''}
@@ -204,7 +204,7 @@ export function getFetchOneQuery(
 ) {
   return `
   query NFTByTokenId($contractAddress: String, $tokenId: String) {
-    nfts(
+    ercnft(
       where: { contractAddress: $contractAddress, tokenId: $tokenId }
       first: 1
       ) {
